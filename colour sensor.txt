@@ -1,0 +1,185 @@
+//colour sensor
+  
+
+  
+
+  TCS3200 Module
+  **************
+  
+#include <avr/io.h>
+#include <util/delay.h>
+
+
+#include "lib/colour_sensor/tcs3200.h"
+
+uint32_t MeasureR();
+uint32_t MeasureG();
+uint32_t MeasureB();
+uint32_t MeasureC();
+
+int main(void)
+{
+	
+	InitTCS3200();
+	
+	DDRD=0b10000111;
+	
+
+	while(1)
+	{
+		
+		
+		TCSLEDOn();
+		uint32_t v1=MeasureC();
+		
+		_delay_ms(100);
+		
+		TCSLEDOff();
+		uint32_t v2=MeasureC();
+		
+		uint32_t d=v1-v2;
+		
+		if(d>8000)
+		{
+			//Object came in range
+			
+			
+		
+			
+			PORTD|=(1<<PD7); //Buzzer On
+			
+			_delay_ms(200);
+			
+			PORTD&=~(1<<PD7); //Buzzer Off
+			
+			//Show		
+			uint32_t r,g,b;
+		
+			TCSLEDOn();
+			
+			r=MeasureR();
+			g=MeasureG();
+			b=MeasureB();
+			
+			TCSLEDOff();
+			
+			
+		
+			if(r>b)
+			{
+				if(r>g){PORTD=0b00000001;
+					_delay_ms(500);
+					PORTD=0b00000000;
+				}
+			
+		
+			}
+			
+		if(r<b)
+		{
+			if(b>g){PORTD=0b00000010;
+				_delay_ms(500);
+				PORTD=0b00000000;
+			}
+			
+			
+		}
+		if(g>b)
+		{
+			if(r<g){PORTD=0b00000100;
+				_delay_ms(500);
+				PORTD=0b00000000;
+			}
+			
+			
+		}
+		
+		
+
+		
+			
+		
+		}
+		
+		
+		
+			
+	}
+	
+}
+
+uint32_t MeasureR()
+{
+	TCSSelectRed();
+	uint32_t r;
+	
+	_delay_ms(10);
+	r=TCSMeasure();	
+	
+	_delay_ms(10);
+	r+=TCSMeasure();	
+	
+	_delay_ms(10);
+	r+=TCSMeasure();
+	
+	return r/3.3;
+	
+}
+
+uint32_t MeasureG()
+{
+	TCSSelectGreen();
+	uint32_t r;
+	
+	_delay_ms(10);
+	r=TCSMeasure();	
+	
+	_delay_ms(10);
+	r+=TCSMeasure();	
+	
+	_delay_ms(10);
+	r+=TCSMeasure();
+	
+	return r/3;
+	
+}
+
+uint32_t MeasureB()
+{
+	TCSSelectBlue();
+	uint32_t r;
+	
+	_delay_ms(10);
+	r=TCSMeasure();	
+	
+	_delay_ms(10);
+	r+=TCSMeasure();	
+	
+	_delay_ms(10);
+	r+=TCSMeasure();
+	
+	return r/4.2;
+	
+}
+
+uint32_t MeasureC()
+{
+	TCSSelectClear();
+	uint32_t r;
+	
+	_delay_ms(10);
+	r=TCSMeasure();	
+	
+	_delay_ms(10);
+	r+=TCSMeasure();	
+	
+	_delay_ms(10);
+	r+=TCSMeasure();
+	
+	return r/3;	
+}
+
+                                                                                                                            
+
+
+
